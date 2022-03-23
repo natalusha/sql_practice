@@ -106,7 +106,7 @@ DROP INDEX pk_ind;
 
 -- **Удаление индекса, созданного при создании констрейнта ПК pk_customer
 ALTER TABLE
-    holubtsova.customer DROP CONSTRAINT pk_customer;
+    holubtsova.customer DROP CONSTRAINT customer_pkey;
 
 -- **Добавить его обратно
 -- ALTER TABLE holubtsova.customer ADD PRIMARY KEY (CustomerID);
