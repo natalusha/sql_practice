@@ -32,20 +32,25 @@ CREATE UNIQUE INDEX pk_ind ON holubtsova.customer(CustomerID);
 
 -- Удостоверьтесь, что ваш индекс появился в системном каталоге pg_indexes
 SELECT
-    t.relname AS table_name,
-    i.relname AS index_name,
-    a.attname AS column_name
+    tablename,
+    indexname,
+    indexdef
 FROM
-    pg_class t,
-    pg_class i,
-    pg_index ix,
-    pg_attribute a
+    pg_indexes
 WHERE
-    t.oid = ix.indrelid
-    AND i.oid = ix.indexrelid
-    AND a.attrelid = t.oid
-    AND a.attnum = ANY(ix.indkey)
-    AND i.relname = 'pk_ind';
+    schemaname = 'holubtsova'
+    AND indexname = 'pk_ind';
+
+-- **Для индекса, который создался констрейнтом
+SELECT
+    tablename,
+    indexname,
+    indexdef
+FROM
+    pg_indexes
+WHERE
+    schemaname = 'holubtsova'
+    AND indexname = 'customer_pkey';
 
 -- Создайте составной индекс типа B-tree на таблице Customer на колонках FirstName и LastName
 CREATE INDEX customer_frst_lst_nm_idx ON holubtsova.customer USING btree(FirstName, LastName);
@@ -99,6 +104,12 @@ WHERE
 -- Удалите индекс PK_CustomerID из таблицы Customer
 DROP INDEX pk_ind;
 
+-- **Удаление индекса, созданного при создании констрейнта ПК pk_customer
+ALTER TABLE
+    holubtsova.customer DROP CONSTRAINT pk_customer;
+
+-- **Добавить его обратно
+-- ALTER TABLE holubtsova.customer ADD PRIMARY KEY (CustomerID);
 -- Создайте индекс типа Hash с названием PK_Modified_Date в таблице Customer на колонке
 -- ModifiedDate
 CREATE INDEX PK_Modified_Date ON holubtsova.customer USING HASH(ModifiedDate);
